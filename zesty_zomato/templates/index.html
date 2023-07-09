@@ -1,0 +1,87 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Zesty Zomato</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Zesty Zomato</h1>
+        <h3>are you admin? <a href="admin">Admin</a></h3>
+        <h3>For chatbot assistence click 
+            <a href="chat">ChatBot</a> here
+        </h3>
+    </header>
+
+    <div class="container">
+        <div class="menu">
+            <h2>Menu</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Availability</th>
+                    </tr>
+                </thead>
+                <tbody id="menu-table-body">
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="order">
+            <h2>Place Order</h2>
+            <form id="order-form">
+                <label for="customer-name">Customer Name:</label>
+                <input type="text" id="customer-name" required>
+
+                <label for="dish-ids">Dish IDs (comma-separated):</label>
+                <input type="text" id="dish-ids" required>
+
+                <button type="submit">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+<script>
+
+    fetch('/menu')
+    .then(res=>res.json())
+    .then(data=>{
+        console.log(data)
+        let cart=data.map((e)=>{
+            return `<tr>
+                        <td>${e.id}</td>
+                        <td>${e.name}</td>
+                        <td>${e.price}</td>
+                        <td>${e.availability}</td>
+                    </tr>`
+        })
+
+        document.getElementById("menu-table-body").innerHTML=cart.join(" ")
+    })
+
+    document.getElementById('order-form').addEventListener('submit',(e)=>{
+        e.preventDefault()
+        let orders={
+            customer_name:document.getElementById("customer-name").value,
+            dishes:document.getElementById("dish-ids").value.split(",").map(Number)
+        }
+        console.log(orders)
+        fetch('/orders',{
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(orders)
+        })
+        .then(res=>res.json())
+        .then(res=>alert(res.message))
+    })
+</script>
+</html>
