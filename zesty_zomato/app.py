@@ -55,6 +55,8 @@ def load_menu():
 
 # Save menu data to MongoDB collection
 def save_menu(menu):
+    if not menu:
+        return
     menu_collection.delete_many({})  # Clear existing data
     menu_collection.insert_many(menu)
 
